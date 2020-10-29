@@ -1,4 +1,4 @@
-<h1>Welcome, <%= @user.username %></h1>
+<h1>Welcome, <%= current_user.username %></h1>
 <% Tweet.all.each do |tweet| %>
     <li><%= tweet.content %></li>
 <% end %>
