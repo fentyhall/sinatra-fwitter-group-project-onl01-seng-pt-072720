@@ -15,10 +15,10 @@ class ApplicationController < Sinatra::Base
   
   get '/signup' do 
     # binding.pry
-    if logged_in? 
-      redirect to '/tweets'
+    if logged_in? && current_user
+      redirect to "/tweets"
     else 
-      erb :index
+      erb :'users/create_user'
     end 
   end 
 
@@ -32,7 +32,7 @@ class ApplicationController < Sinatra::Base
   end 
 
   get '/login' do 
-    if logged_in? 
+    if logged_in? && current_user
       redirect to '/tweets'
     else  
       erb :'users/login'
@@ -40,10 +40,10 @@ class ApplicationController < Sinatra::Base
   end 
 
   post '/login' do 
-    user = User.find_by(username: params[:username])
+    @user = User.find_by(username: params[:username])
 
-    if user && user.authenticate(params[:password])
-      session[:user_id] = user.id
+    if @user && @user.authenticate(params[:password])
+      session[:user_id] = @user.id
       redirect to '/tweets'
     else  
       redirect to '/login'
@@ -51,12 +51,16 @@ class ApplicationController < Sinatra::Base
   end 
 
   get '/logout' do
-    if logged_in? 
-      session.clear 
-      redirect '/login' 
+    if logged_in? && current_user
+      erb :'users/logout'
     else  
-      redirect '/index'
+      redirect "/login"
     end 
+  end 
+  
+  post '/logout' do 
+    session.clear
+    redirect "/login"
   end 
 
   helpers do 
